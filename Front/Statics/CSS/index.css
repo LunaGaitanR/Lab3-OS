@@ -1,0 +1,36 @@
+body{
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+header{
+    text-align: center;
+    background-color: #6a5acd;
+    color: whitesmoke;
+    margin: 1px;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    padding: 20px;
+}
+
+button{
+    background-color: #887cd1;
+    color: black;
+    border-color: #887cd1;
+    height: 40px;
+    width: 150px;
+    border-radius: 9999px;
+    margin: 5px;
+}
+
+.vista-procesos{
+    border: 1px solid #ccc;
+    display: flex;
+    padding: 20px;
+    flex-direction: column;
+}
