@@ -32,5 +32,11 @@ button{
     border: 1px solid #ccc;
     display: flex;
     padding: 20px;
-    flex-direction: column;
+    flex-direction: row;
+}
+
+.tabla-procesos{
+    padding: auto;
+    margin: 20px;
+    border: solid 1px;
 }
