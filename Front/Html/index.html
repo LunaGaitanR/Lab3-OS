@@ -1,57 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../Statics/CSS/index.css">
-    <title>Gestión de Memoria</title>
+    <link rel="icon" href="../Statics/Imagenes/Linux-Logo.png">
+    <title>Lab OS #3</title>
 </head>
+
 <body>
     <header>
-        <h1>Laboratorio 3: Gestión de memoria</h1>
+        <h1>Laboratorio #3 OS</h1>
     </header>
-    
     <main>
-        <section>
-            <label>Selecciona un algoritmo:</label>
-            <select style="border-radius: 9999px; padding: 5px;" >
-                <option>Segmentación</option>
-                <option>Paginación</option>
-            </select>
-        </section>
-
-        <div class="vista-procesos">
-            <div>
-                <h3>Agregar procesos</h3>
-                <button id="btn-Notepad">Notepad</button><br>
-                <button id="btn-Word">Word</button><br>
-                <button id="btn-Notepad">Excel</button><br>
-                <button id="btn-Notepad">AutoCAD</button><br>
-                <button id="btn-Notepad">Calculadora</button><br>
-            </div>
-
-            
-            <div>
-                <h3>Información de procesos</h3>
-                <table class="tabla-procesos" id="tabla-procesos">
-                    <thead id="thead-procesos">
-                        <tr id="fila-principal">
-                            <th rowspan="2">ID</th>
-                            <th rowspan="2">Nombre</th>
-                            <th rowspan="2">Memoria a usar</th>
-                        </tr>
-                        <tr id="fila-secundaria">
-                            <th>P0</th>
-                            <th id="os-name">OS</th>
-                            <th id="os-weight">1048576</th>
+        <div class="ContenedorRow">
+            <div class="ContenedorItem">
+                <h3>Tabla de procesos</h3>
+                <button class="btn" id="btnEditarProcesos">Editar procesos</button>
+                <table class="TablaProcesosIterativos">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>.Text</th>
+                            <th>.Data</th>
+                            <th>.Bss</th>
+                            <th>.Stack</th>
+                            <th>.Heap</th>
                         </tr>
                     </thead>
-
-
-
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="ContenedorItem">
+                <h3>Tabla de gestion de memoria</h3>
+                <table class="TablaSimulacion">
+                    <thead>
+                        <tr>
+                            <th>Marco</th>
+                            <th>Proceso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td contenteditable="True"></td>
+                            <td contenteditable="True"></td>
+                        </tr>
+                        <tr>
+                            <td contenteditable="True"></td>
+                            <td contenteditable="True"></td>
+                        </tr>
+                        <tr>
+                            <td contenteditable="True"></td>
+                            <td contenteditable="True"></td>
+                        </tr>
+                        <tr>
+                            <td contenteditable="True"></td>
+                            <td contenteditable="True"></td>
+                        </tr>
+                        <tr>
+                            <td contenteditable="True"></td>
+                            <td contenteditable="True"></td>
+                        </tr>
+                        <tr>
+                            <td contenteditable="True"></td>
+                            <td contenteditable="True"></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </main>
+    <footer>
+        <div class="footer-content">
+            <div class="autor">
+                <p>Juan Manuel Castillo</p>
+                <a href="https://github.com/JinBot31"> <img src="../Statics/Imagenes/github.png" alt="GitHub"></a>
+            </div>
+            <div class="autor">
+                <p>Sebastian Quintero Jaimes</p>
+                <a href="https://github.com/Pillallo13"> <img src="../Statics/Imagenes/github.png" alt="GitHub"></a>
+            </div>
+            <div class="autor">
+                <p>Luna Gaitan</p>
+                <a href="https://github.com/LunaGaitanR"> <img src="../Statics/Imagenes/github.png" alt="GitHub"></a>
+            </div>
+        </div>
+    </footer>
+    <dialog id="TablaProcesos">
+        <div class="contenedor-Item">
+            <button class="btn" id="btnVolver">Regresar</button>
+            <table class="TablaProcesosIterativos">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>.text</th>
+                        <th>.Data</th>
+                        <th>.Bss</th>
+                        <th>.Stack</th>
+                        <th>.Heap</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td contenteditable="True"></td>
+                        <td contenteditable="True"></td>
+                        <td contenteditable="True"></td>
+                        <td contenteditable="True"></td>
+                        <td contenteditable="True"></td>
+                        <td contenteditable="True"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </dialog>
+    <script type="module" src="../js/PopUp.js"></script>
 </body>
+
 </html>
