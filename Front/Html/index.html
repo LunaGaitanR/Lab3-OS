@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../Statics/CSS/index.css">
     <link rel="icon" href="../Statics/Imagenes/Linux-Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <title>Lab OS #3</title>
 </head>
 
@@ -18,6 +19,7 @@
             <div class="ContenedorItem">
                 <h3>Tabla de procesos</h3>
                 <button class="btn" id="btnEditarProcesos">Editar procesos</button>
+                <button class="btn" id="btnLeerTabla">Leer Tabla</button>
                 <table class="TablaProcesosIterativos">
                     <thead>
                         <tr>
@@ -37,6 +39,12 @@
                             <td></td>
                             <td></td>
                             <td></td>
+                            <td class="sinBorde">
+                                <button class="btn btnActivacionProcesos">
+                                    <img src="../Statics/Imagenes/icons8-done-20.png"
+                                        alt="Boton de activacion del proceso">
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -98,7 +106,10 @@
     </footer>
     <dialog id="TablaProcesos">
         <div class="contenedor-Item">
-            <button class="btn" id="btnVolver">Regresar</button>
+            <div class="aliniarBotones">
+                <button class="btn" id="btnVolver">Regresar</button>
+                <button class="btn" id="btnAgregarProcesos">Agregar Proceso</button>
+            </div>
             <table class="TablaProcesosIterativos">
                 <thead>
                     <tr>
@@ -112,18 +123,25 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td contenteditable="True"></td>
-                        <td contenteditable="True"></td>
-                        <td contenteditable="True"></td>
-                        <td contenteditable="True"></td>
-                        <td contenteditable="True"></td>
-                        <td contenteditable="True"></td>
+                        <td contenteditable="True">P1</td>
+                        <td contenteditable="True">2</td>
+                        <td contenteditable="True">3</td>
+                        <td contenteditable="True">4</td>
+                        <td contenteditable="True">5</td>
+                        <td contenteditable="True">6</td>
+                        <td class="sinBorde">
+                            <button class="btn" id="btnEliminarProceso">
+                                <img src="../Statics/Imagenes/icons8-close-20.png"
+                                    alt="Boton de activacion del proceso">
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </dialog>
-    <script type="module" src="../js/PopUp.js"></script>
+    <script type="module" src="../js/Front.js"></script>
+    <script type="module" src="../../Back/index.js"></script>
 </body>
 
 </html>
