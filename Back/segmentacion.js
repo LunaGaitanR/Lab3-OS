@@ -144,7 +144,6 @@ class SimuladorSegmentacion {
 }
 
 // 👇 Ejecutar
-const sim = new SimuladorSegmentacion();
 sim.cargarEjemplos();
 sim.mostrarProcesos();
 sim.mostrarPila(); 

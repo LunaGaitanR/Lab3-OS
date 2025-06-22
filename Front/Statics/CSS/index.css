@@ -214,3 +214,17 @@ button img {
 .sinBorde {
         border: none;
 }
+
+select {
+        padding: 10px;
+        border-radius: 30px;
+        color: #fff;
+        background-color: #404b61;
+
+}
+
+select:hover {
+        background-color: #222833;
+
+
+}
