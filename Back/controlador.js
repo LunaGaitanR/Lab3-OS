@@ -5,7 +5,20 @@ const btnLeerTabla    = document.getElementById("btnLeerTabla");
 const selAlgoritmo    = document.getElementById("Algoritmo");
 const tablaSimulacion = document.querySelector(".TablaSimulacion tbody");
 
-btnLeerTabla.addEventListener("click", () => {
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".btnActivacionProcesos")) {
+    const boton = event.target.closest(".btnActivacionProcesos");
+
+    // Esperar 500 milisegundos antes de ejecutar render()
+    setTimeout(() => { render();}, 1000);
+  }
+});
+
+
+btnLeerTabla.addEventListener("click", render)
+
+
+function render(){
   const datos = leerTablaProcesos();
   if (!datos.length) {
     alert("No hay procesos activos que simular.");
@@ -30,7 +43,7 @@ btnLeerTabla.addEventListener("click", () => {
       algoritmo: 'primer',
       procesos: procesosSeg
     });
-
+    console.log(resultado) // Eliminar esto despues de las pruebas
     renderTablaSegmentacion(resultado);
 
   } else {
@@ -53,10 +66,10 @@ btnLeerTabla.addEventListener("click", () => {
       procesos:   procesosPag,
       accesses:   []
     });
-
+    console.log(resultado) // Eliminar esto despues de las pruebas
     renderTablaPaginacion(resultado);
   }
-});
+};
 
 function leerTablaProcesos() {
   const tabla = document.querySelector(".TablaProcesosIterativos tbody");
@@ -79,18 +92,40 @@ function leerTablaProcesos() {
   return datos;
 }
 
-function renderTablaSegmentacion(segmentos) {
+function renderTablaSegmentacion({ segmentos, memoriaOcupada }) {
   tablaSimulacion.innerHTML = "";
+//Celdad Normales
   segmentos.forEach(s => {
     const tr = document.createElement("tr");
-    const td1 = document.createElement("td");
-    const td2 = document.createElement("td");
-    td1.textContent = `${s.base}–${s.fin}`;
-    td2.textContent = `${s.proceso} (${s.tipo})`;
-    tr.append(td1, td2);
+
+    const tdSegmento = document.createElement("td");
+    const tdBase     = document.createElement("td");
+    const tdFin      = document.createElement("td");
+    const tdTam      = document.createElement("td");
+
+    tdSegmento.textContent = s.segmento;
+    tdBase.textContent     = s.base;
+    tdFin.textContent      = s.fin;
+    tdTam.textContent      = s.tam;
+
+    tr.append(tdSegmento, tdBase, tdFin, tdTam);
     tablaSimulacion.appendChild(tr);
   });
+
+  // Fila resumen con memoria ocupada
+  const trResumen = document.createElement("tr");
+
+  const tdResumenLabel = document.createElement("td");
+  tdResumenLabel.colSpan = 3;
+  tdResumenLabel.textContent = "Memoria ocupada total (KiB)";
+
+  const tdResumenValor = document.createElement("td");
+  tdResumenValor.textContent = memoriaOcupada;
+
+  trResumen.append(tdResumenLabel, tdResumenValor);
+  tablaSimulacion.appendChild(trResumen);
 }
+
 
 function renderTablaPaginacion({ freeFrames, fifoQueue, tables }) {
   tablaSimulacion.innerHTML = "";
