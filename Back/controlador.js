@@ -7,13 +7,13 @@ const tablaSimulacion = document.querySelector(".TablaSimulacion tbody");
 
 document.addEventListener("click", (event) => {
 	if (event.target.closest(".btnActivacionProcesos")) {
-		const boton = event.target.closest(".btnActivacionProcesos");
-
-		// Esperar 500 milisegundos antes de ejecutar render()
-		render();
+		setTimeout(render, 0);
 	}
 });
-btnLeerTabla.addEventListener("click", render);
+
+btnLeerTabla.addEventListener("click", () => {
+	setTimeout(render, 0);
+});
 
 function render() {
 	const datos = leerTablaProcesos();
@@ -23,7 +23,6 @@ function render() {
 	}
 
 	if (selAlgoritmo.value === "1") {
-		// Segmentación
 		const procesosSeg = datos.map((p) => ({
 			nombre: p.nombre,
 			segmentos: [
@@ -40,9 +39,9 @@ function render() {
 			algoritmo: "primer",
 			procesos: procesosSeg,
 		});
+
 		renderTablaSegmentacion(resultado);
 	} else {
-		// Paginación FIFO
 		const procesosPag = datos.map((p) => ({
 			pid: p.nombre,
 			numPages: Math.ceil(
@@ -55,14 +54,11 @@ function render() {
 			),
 		}));
 
-		// Generar accesos intercalados limitados para evitar thrashing excesivo
 		const accesses = [];
-		const MARCOS_DISPONIBLES = Math.floor((16 * 1024) / 4); // 4096 marcos
+		const MARCOS_DISPONIBLES = Math.floor((16 * 1024) / 4);
 
-		// Limitar páginas por proceso para simular working set
 		const procesosPagLimitados = procesosPag.map((proc) => ({
 			...proc,
-			// Limitar a máximo 1/8 de la memoria disponible por proceso o sus páginas reales, lo que sea menor
 			paginasActivas: Math.min(
 				proc.numPages,
 				Math.floor(MARCOS_DISPONIBLES / 8)
@@ -73,21 +69,18 @@ function render() {
 			...procesosPagLimitados.map((p) => p.paginasActivas)
 		);
 
-		// Intercalar accesos a las páginas activas
 		for (let page = 0; page < maxPaginasActivas; page++) {
 			procesosPagLimitados.forEach((proc) => {
 				if (page < proc.paginasActivas) {
 					accesses.push({
 						pid: proc.pid,
-						addr: page * 4 * 1024, // dirección base de cada página
+						addr: page * 4 * 1024,
 					});
 				}
 			});
 		}
 
-		// Agregar algunos accesos adicionales aleatorios para simular comportamiento real
 		procesosPagLimitados.forEach((proc) => {
-			// Acceder a algunas páginas adicionales de forma aleatoria
 			const paginasAdicionales = Math.min(
 				5,
 				proc.numPages - proc.paginasActivas
@@ -105,20 +98,13 @@ function render() {
 			}
 		});
 
+		console.time("simularPaginacion");
 		const resultado = simularPaginacion({
 			memoriaMiB: 16,
 			pageKiB: 4,
 			procesos: procesosPag,
 			accesses: accesses,
 		});
-
-		// Debug: mostrar información de los procesos
-		console.log("Procesos y sus páginas:");
-		procesosPag.forEach((p) => {
-			console.log(`${p.pid}: ${p.numPages} páginas`);
-		});
-		console.log("Total de accesos:", accesses.length);
-		console.log("Marcos disponibles:", Math.floor((16 * 1024) / 4));
 
 		renderTablaPaginacion(resultado);
 	}
@@ -146,55 +132,70 @@ function leerTablaProcesos() {
 }
 
 function renderTablaSegmentacion({segmentos, memoriaOcupada}) {
+	const tabla = document.getElementById("TablaSimulacion");
+	const thead = tabla.querySelector("thead");
+
+	if (thead && thead.rows.length > 0) {
+		const filaEncabezado = thead.rows[0];
+
+		filaEncabezado.innerHTML = "";
+
+		filaEncabezado.innerHTML = `
+    <th>Segmento</th>
+    <th>Direccion Base</th>
+    <th>Dirrecion Fin</th>
+    <th>Tamaño (KiB)</th>
+  `;
+	}
+
 	tablaSimulacion.innerHTML = "";
-	//Celdad Normales
+	const fragment = document.createDocumentFragment();
+
 	segmentos.forEach((s) => {
 		const tr = document.createElement("tr");
 
-		const tdSegmento = document.createElement("td");
-		const tdBase = document.createElement("td");
-		const tdFin = document.createElement("td");
-		const tdTam = document.createElement("td");
+		tr.innerHTML = `
+			<td>${s.segmento}</td>
+			<td>${s.base}</td>
+			<td>${s.fin}</td>
+			<td>${s.tam}</td>
+		`;
 
-		tdSegmento.textContent = s.segmento;
-		tdBase.textContent = s.base;
-		tdFin.textContent = s.fin;
-		tdTam.textContent = s.tam;
-
-		tr.append(tdSegmento, tdBase, tdFin, tdTam);
-		tablaSimulacion.appendChild(tr);
+		fragment.appendChild(tr);
 	});
 
-	// Fila resumen con memoria ocupada
 	const trResumen = document.createElement("tr");
+	trResumen.innerHTML = `
+		<td colspan="3">Memoria ocupada total (KiB)</td>
+		<td>${memoriaOcupada}</td>
+	`;
 
-	const tdResumenLabel = document.createElement("td");
-	tdResumenLabel.colSpan = 3;
-	tdResumenLabel.textContent = "Memoria ocupada total (KiB)";
-
-	const tdResumenValor = document.createElement("td");
-	tdResumenValor.textContent = memoriaOcupada;
-
-	trResumen.append(tdResumenLabel, tdResumenValor);
-	tablaSimulacion.appendChild(trResumen);
+	fragment.appendChild(trResumen);
+	tablaSimulacion.appendChild(fragment);
 }
 
 function renderTablaPaginacion({frames, PAGE_SIZE}) {
 	tablaSimulacion.innerHTML = "";
-
+	const fragment = document.createDocumentFragment();
 	let memoriaOcupada = 0;
 	const estadisticasProcesos = new Map();
 
-	// Cabecera
-	const trHead = document.createElement("tr");
-	trHead.innerHTML = `
-    <th>Frame</th>
+	const tabla = document.getElementById("TablaSimulacion");
+	const thead = tabla.querySelector("thead");
+
+	if (thead && thead.rows.length > 0) {
+		const filaEncabezado = thead.rows[0];
+
+		filaEncabezado.innerHTML = "";
+
+		filaEncabezado.innerHTML = `
+    <th style="border-top-left-radius: 20px;">Marco</th>
     <th>Asignación</th>
     <th>Dirección base</th>
     <th>Dirección fin</th>
-    <th>Tamaño (KiB)</th>
+    <th style="border-top-right-radius: 20px;">Tamaño (KiB)</th>
   `;
-	tablaSimulacion.appendChild(trHead);
+	}
 
 	frames.forEach(({frame, pid, page}) => {
 		const tr = document.createElement("tr");
@@ -203,44 +204,37 @@ function renderTablaPaginacion({frames, PAGE_SIZE}) {
 		const tam = PAGE_SIZE / 1024;
 
 		if (pid !== null) {
-			// Contar marcos por proceso
 			if (!estadisticasProcesos.has(pid)) {
 				estadisticasProcesos.set(pid, 0);
 			}
 			estadisticasProcesos.set(pid, estadisticasProcesos.get(pid) + 1);
 
 			tr.innerHTML = `
-        <td>${frame}</td>
-        <td>${pid}·pag${page}</td>
-        <td>${base}</td>
-        <td>${fin}</td>
-        <td>${tam}</td>
-      `;
+				<td>${frame}</td>
+				<td>${pid}·pag${page}</td>
+				<td>${base}</td>
+				<td>${fin}</td>
+				<td>${tam}</td>
+			`;
 			memoriaOcupada += tam;
 		} else {
 			tr.innerHTML = `
-        <td>${frame}</td>
-        <td>Libre</td>
-        <td>${base}</td>
-        <td>${fin}</td>
-        <td>${tam}</td>
-      `;
+				<td>${frame}</td>
+				<td>Libre</td>
+				<td>${base}</td>
+				<td>${fin}</td>
+				<td>${tam}</td>
+			`;
 		}
-		tablaSimulacion.appendChild(tr);
+
+		fragment.appendChild(tr);
 	});
 
-	// Fila resumen con memoria ocupada
 	const trResumen = document.createElement("tr");
 	trResumen.innerHTML = `
-    <td colspan="4"><b>Memoria ocupada total (KiB)</b></td>
-    <td><b>${memoriaOcupada}</b></td>
-  `;
-	tablaSimulacion.appendChild(trResumen);
-
-	// Mostrar estadísticas de procesos en consola
-	console.log("Distribución de marcos por proceso:");
-	estadisticasProcesos.forEach((marcos, pid) => {
-		console.log(`${pid}: ${marcos} marcos (${marcos * 4} KiB)`);
-	});
+		<td colspan="4"><b>Memoria ocupada total (KiB)</b></td>
+		<td><b>${memoriaOcupada}</b></td>
+	`;
+	fragment.appendChild(trResumen);
+	tablaSimulacion.appendChild(fragment);
 }
-
