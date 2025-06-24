@@ -1,3 +1,5 @@
+import { simularPaginacion } from '../../Back/paginacion.js';
+
 const btnAbrirPopUp = document.querySelector("#btnEditarProcesos");
 const btnCerrarPopUp = document.querySelector("#btnVolver");
 const TablaProcesos = document.querySelector("#TablaProcesos");
@@ -94,3 +96,52 @@ function actualizarTablaPrincipalDesdeDialog() {
         tablaPrincipal.appendChild(filaNueva);
     });
 }
+
+// Esperar a que el DOM esté listo
+window.addEventListener('DOMContentLoaded', () => {
+  // Selecciona la tabla de gestión de memoria (ajusta el ID según tu HTML)
+  const tablaMemoria = document.querySelector('#TablaGestionMemoria tbody') || document.querySelector('#tablaMemoria tbody');
+
+  function mostrarTablaMemoria(pagingResult) {
+    tablaMemoria.innerHTML = '';
+    const { frames, PAGE_SIZE } = pagingResult;
+    const PAGE_KIB = PAGE_SIZE / 1024;
+
+    frames.forEach(({ frame, pid, page }) => {
+      const baseAddr = frame * PAGE_SIZE;
+      const endAddr  = baseAddr + PAGE_SIZE;
+      const row = document.createElement('tr');
+
+      // Segmento
+      const cellSeg = document.createElement('td');
+      cellSeg.textContent = pid !== null ? `P${pid} (page ${page})` : 'Libre';
+      row.appendChild(cellSeg);
+
+      // Dirección Base
+      const cellBase = document.createElement('td');
+      cellBase.textContent = baseAddr.toString(16).padStart(8, '0').toUpperCase();
+      row.appendChild(cellBase);
+
+      // Dirección Fin
+      const cellEnd = document.createElement('td');
+      cellEnd.textContent = endAddr.toString(16).padStart(8, '0').toUpperCase();
+      row.appendChild(cellEnd);
+
+      // Tamaño
+      const cellSize = document.createElement('td');
+      cellSize.textContent = `${PAGE_KIB.toFixed(0)} KiB`;
+      row.appendChild(cellSize);
+
+      tablaMemoria.appendChild(row);
+    });
+  }
+
+  // Variables procesos y accesses deben estar definidas en controller o globalmente
+  if (typeof procesos !== 'undefined' && typeof accesses !== 'undefined') {
+    const resultado = simularPaginacion({ memoriaMiB:8, pageKiB:4, procesos, accesses });
+    mostrarTablaMemoria(resultado);
+  } else {
+    console.warn('Variables procesos o accesses no definidas.');
+  }
+});
+
